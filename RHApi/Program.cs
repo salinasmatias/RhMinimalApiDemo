@@ -1,5 +1,9 @@
+using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using RHApi.Data;
+using RHApi.Dtos;
+using RHApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +14,7 @@ builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetSection("ConnectionString").Value;
 builder.Services.AddDbContext<HrDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 
@@ -22,12 +27,15 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
-app.MapGet("/weatherforecast", (HrDbContext context) =>
+app.MapGet("/weatherforecast", (HrDbContext context, IMapper mapper) =>
 {
-    var dbTest = context.Countries.ToList();
-    return dbTest;
+    var dbTest = context.Countries.Include(x => x.Region).ToList();
+    var result = mapper.Map<List<CountryDto>>(dbTest);
+    return result;
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
 app.Run();
+
+public partial class Program { }

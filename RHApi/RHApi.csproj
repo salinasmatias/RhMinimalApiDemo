@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <Folder Include="Models\" />
-    <Folder Include="Mappers\" />
     <Folder Include="Auth\" />
     <Folder Include="Extensions\" />
     <Folder Include="Validators\" />
