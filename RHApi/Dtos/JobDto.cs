@@ -9,7 +9,5 @@ namespace RHApi.Dtos
         public decimal? MinSalary { get; set; }
 
         public decimal? MaxSalary { get; set; }
-
-        public virtual List<EmployeeDto>? Employees { get; set; }
     }
 }
