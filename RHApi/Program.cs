@@ -1,9 +1,11 @@
 using AutoMapper;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using RHApi.Data;
 using RHApi.Data.Repository;
 using RHApi.Dtos;
 using RHApi.Models;
+using RHApi.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +18,7 @@ var connectionString = builder.Configuration.GetSection("ConnectionString").Valu
 builder.Services.AddDbContext<HrDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
-
+builder.Services.AddScoped<IValidator<JobDto>, JobValidator>();
 
 var app = builder.Build();
 
@@ -75,8 +77,13 @@ app.MapGet("/jobs/{id}", async (int id, IRepository<Job> repository, IMapper map
 .WithDescription("Returns the data of a job given a correct Id. Will return 404 if no job with the provided id is found")
 .WithOpenApi();
 
-app.MapPost("/jobs", async (JobDto request, IRepository<Job> repository, IMapper mapper) =>
+app.MapPost("/jobs", async (JobDto request, IRepository<Job> repository, IMapper mapper, IValidator<JobDto> validator) =>
 {
+    var validationResult = await validator.ValidateAsync(request);
+    if (!validationResult.IsValid)
+    {
+        return Results.ValidationProblem(validationResult.ToDictionary());
+    }
     var job = mapper.Map<Job>(request);
     await repository.CreateAsync(job);
     return Results.StatusCode(201);
