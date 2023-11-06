@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace RHApi.Models;
+﻿namespace RHApi.Models;
 
 public partial class Region
 {

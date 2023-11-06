@@ -1,6 +1,4 @@
-﻿using RHApi.Models;
-
-namespace RHApi.Dtos
+﻿namespace RHApi.Dtos
 {
     public class JobDto
     {
